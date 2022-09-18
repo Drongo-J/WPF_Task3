@@ -212,26 +212,30 @@
                                Height="50">
                         </Image >
 
-                        <TextBox
+                        <Canvas Background="Transparent" Width="747">
+                            <TextBox
                             Name="Doc_name"
                             Text="Untitled Document"
                             Style="{StaticResource textbox_style}"
                             Width="105" 
                             Height="20"
                             LostFocus="Doc_name_LostFocus">
-                        </TextBox>
-                        <Border
-                            BorderBrush="Gray"
-                            BorderThickness="3"
-                            Height="30"
-                            Width="60">
-                            <Button
+                            </TextBox>
+                            <Border
+                                Canvas.Right="24"
+                                Canvas.Top="10"
+                                BorderBrush="Gray"
+                                BorderThickness="3"
+                                Height="30"
+                                Width="60">
+                                <Button
                                 Name="Save_Button"
                                 Content="Save"
                                 Background="#4285F4"
                                 HorizontalContentAlignment ="Center"
                                 Foreground="White" Click="Save_Button_Click" Margin="-1,-1,-1,-1"/>
-                        </Border>
+                            </Border>
+                        </Canvas>
                     </WrapPanel>
                 </Border>
 
@@ -539,8 +543,7 @@
                     Background="White"
                     Width="350"
                     BorderBrush="Gray" 
-                    BorderThickness="1"
-                    VerticalAlignment="Top">
+                    BorderThickness="1">
                     <TextBox
                         IsUndoEnabled="True"
                         Margin="0,25,0,25"
@@ -557,6 +560,7 @@
                         TextAlignment="Left"
                         TextWrapping="Wrap"
                         AcceptsReturn="True"
+                        KeyDown="Writings_KeyDown"
 />
                 </Border>
             </ScrollViewer>

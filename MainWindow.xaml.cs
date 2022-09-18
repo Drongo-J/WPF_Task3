@@ -30,7 +30,6 @@ namespace Wpf__Task3
         public const int DefaultFontSize = 11;
         bool AutoSave = false;
         bool FileSaved = false;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -44,7 +43,6 @@ namespace Wpf__Task3
 
 
             ColorPicker.SelectedColor = colorFromBrush;
-            //Writings.Foreground = Brushes.Black;
 
             var families = Fonts.SystemFontFamilies;
 
@@ -52,30 +50,6 @@ namespace Wpf__Task3
             {
                 Fonts_ComboBox.Items.Add(fontfamily);
             }
-
-            DispatcherTimer dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Interval = new TimeSpan(1000000); // in every 1 seconds
-            dispatcherTimer.Tick += DispatcherTimer_Tick;
-            dispatcherTimer.Start();
-
-        }
-
-        private void DispatcherTimer_Tick(object sender, EventArgs e)
-        {
-                string filename = Doc_name.Text;
-                string content = Writings.Text;
-
-                //var sfd = new SaveFileDialog()
-                //{
-                //    FileName = filename,
-                //    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                //};
-
-                //using (Stream s = File.Open(filename, FileMode.Open))
-                using (StreamWriter sw = new StreamWriter(filename))
-                {
-                    sw.Write(content);
-                }
         }
 
         private void Doc_name_LostFocus(object sender, RoutedEventArgs e)
@@ -86,12 +60,12 @@ namespace Wpf__Task3
 
         private void Undo_Btn_Click(object sender, RoutedEventArgs e)
         {
-
+            Writings.Undo();
         }
 
         private void Redo_Btn_Click(object sender, RoutedEventArgs e)
         {
-
+            Writings.Redo();
         }
 
         private void Print_Btn_Click(object sender, RoutedEventArgs e)
@@ -251,25 +225,49 @@ namespace Wpf__Task3
         {
             if (!FileSaved)
             {
-                string filename = Doc_name.Text;
                 string content = Writings.Text;
 
-                var sfd = new SaveFileDialog()
-                {
-                    FileName = filename,
-                    Filter = "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
-                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                };
+                var openFileDialog = new OpenFileDialog();
 
-                if (sfd.ShowDialog() == true)
+                if (openFileDialog.ShowDialog() == true)
                 {
-                    using (Stream s = File.Open(sfd.FileName, FileMode.CreateNew))
-                    using (StreamWriter sw = new StreamWriter(s))
-                    {
-                        sw.Write(content);
-                        FileSaved = true;
-                    }
+                    FileName = openFileDialog.FileName;
+                    StreamWriter writer = new StreamWriter(File.OpenWrite(FileName));
+
+                    writer.Write(content);
+                    writer.Close();
+
+                    FileSaved = true;
+                    FileInfo fileInfo = new FileInfo(FileName);
+                    Doc_name.Text = fileInfo.Name;
                 }
+            }
+        }
+
+
+        public string FileName { get; set; }
+        private void Writings_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (AutoSave)
+            {
+                var lastLetter = e.Key.ToString();
+                if (e.IsDown)
+                {
+                    lastLetter = lastLetter.ToLower();
+                }
+
+                string content = Writings.Text;
+
+                if (char.IsDigit(lastLetter, 0) || char.IsLetter(lastLetter, 0) || e.Key == Key.Space || e.Key == Key.Enter)
+                {
+                    content += lastLetter;
+                }
+
+                StreamWriter writer = new StreamWriter(File.OpenWrite(FileName));
+
+                writer.Write(content);
+
+                writer.Close();
             }
         }
     }
